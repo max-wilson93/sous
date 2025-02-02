@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'; // Import Routes and Route here
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
@@ -100,43 +100,41 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <div className={darkMode ? 'dark-mode' : 'light-mode'}>
-        <Header
-          user={user}
-          email={email}
-          password={password}
-          setEmail={setEmail}
-          setPassword={setPassword}
-          handleSignIn={handleSignIn}
-          handleSignUp={handleSignUp}
-          handleSignOut={handleSignOut}
-          error={error}
-        />
-        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-        <main>
-          <Routes>
-            <Route
-              path="/"
-              element={<Inventory inventory={inventory} updateInventory={updateInventory} updateShoppingList={updateShoppingList} />}
-            />
-            <Route
-              path="/recipes"
-              element={<Recipes recipes={recipes} />}
-            />
-            <Route
-              path="/shopping-list"
-              element={<ShoppingList shoppingList={shoppingList} />}
-            />
-            <Route
-              path="/ai-recipe"
-              element={<AIRecipe updateRecipes={updateRecipes} />}
-            />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <div className={darkMode ? 'dark-mode' : 'light-mode'}>
+      <Header
+        user={user}
+        email={email}
+        password={password}
+        setEmail={setEmail}
+        setPassword={setPassword}
+        handleSignIn={handleSignIn}
+        handleSignUp={handleSignUp}
+        handleSignOut={handleSignOut}
+        error={error}
+      />
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={<Inventory inventory={inventory} updateInventory={updateInventory} updateShoppingList={updateShoppingList} />}
+          />
+          <Route
+            path="/recipes"
+            element={<Recipes recipes={recipes} />}
+          />
+          <Route
+            path="/shopping-list"
+            element={<ShoppingList shoppingList={shoppingList} />}
+          />
+          <Route
+            path="/ai-recipe"
+            element={<AIRecipe updateRecipes={updateRecipes} />}
+          />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 };
 

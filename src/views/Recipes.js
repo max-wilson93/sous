@@ -11,6 +11,21 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
   });
 
   const [expandedRecipe, setExpandedRecipe] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false); // Track changes
+
+  // Save recipes to Firebase only when there are changes
+  const saveToFirebase = async () => {
+    try {
+      await setDoc(doc(db, "Recipes", "user-Recipes"), {
+        recipes: recipes,
+        lastUpdated: new Date(),
+      });
+      console.log("Recipes saved to Firebase.");
+      setHasChanges(false); // Reset change tracker after save
+    } catch (error) {
+      console.error("Error saving recipes: ", error);
+    }
+  };
 
   // Load recipes from localStorage when the component mounts
   useEffect(() => {
@@ -18,13 +33,6 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
     if (storedRecipes) {
       setRecipes(JSON.parse(storedRecipes));
     }
-
-    // Auto-save to Firebase every 5 minutes
-    const intervalId = setInterval(() => {
-      saveToFirebase();
-    }, 300000); // 5 minutes
-
-    return () => clearInterval(intervalId); // Clean up interval
   }, []);
 
   // Save recipes to localStorage whenever recipes change
@@ -33,19 +41,6 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
       localStorage.setItem('recipes', JSON.stringify(recipes));
     }
   }, [recipes]);
-
-  // Save data to Firebase
-  const saveToFirebase = async () => {
-    try {
-      await setDoc(doc(db, "Recipes", "user-Recipes"), {
-        recipes: recipes,
-        lastUpdated: new Date(),
-      });
-      console.log("Recipes saved to Firebase.");
-    } catch (error) {
-      console.error("Error saving recipes: ", error);
-    }
-  };
 
   // Handle adding a new recipe
   const saveRecipe = () => {
@@ -57,6 +52,7 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
         ingredients: [{ name: '', quantity: 0, unit: 'grams' }],
         procedure: [''],
       });
+      setHasChanges(true); // Mark as changed
     } else {
       alert('Please enter a recipe name and at least one ingredient.');
     }
@@ -67,6 +63,7 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
       ...newRecipe,
       ingredients: [...newRecipe.ingredients, { name: '', quantity: 0, unit: 'grams' }],
     });
+    setHasChanges(true); // Mark as changed
   };
 
   const handleIngredientChange = (index, field, value) => {
@@ -76,16 +73,19 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
       [field]: value,
     };
     setNewRecipe({ ...newRecipe, ingredients: updatedIngredients });
+    setHasChanges(true); // Mark as changed
   };
 
   const handleProcedureChange = (index, value) => {
     const updatedProcedure = [...newRecipe.procedure];
     updatedProcedure[index] = value;
     setNewRecipe({ ...newRecipe, procedure: updatedProcedure });
+    setHasChanges(true); // Mark as changed
   };
 
   const addProcedureStep = () => {
     setNewRecipe({ ...newRecipe, procedure: [...newRecipe.procedure, ''] });
+    setHasChanges(true); // Mark as changed
   };
 
   const handleCookRecipe = (recipe) => {
@@ -113,6 +113,12 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
 
   const toggleRecipeExpansion = (index) => {
     setExpandedRecipe(expandedRecipe === index ? null : index);
+  };
+
+  const saveIfNeeded = () => {
+    if (hasChanges) {
+      saveToFirebase();
+    }
   };
 
   return (
@@ -183,7 +189,7 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
 
       {/* Save Button */}
       <button onClick={saveRecipe} style={styles.saveButton}>Save Recipe</button>
-      <button onClick={saveToFirebase} style={styles.syncButton}>Sync with Cloud</button>
+      <button onClick={saveIfNeeded} style={styles.syncButton}>Sync with Cloud</button>
 
       {/* Recipe List */}
       <div style={styles.catalog}>
@@ -212,6 +218,7 @@ const Recipes = ({ updateInventory, inventory, addToShoppingList }) => {
     </div>
   );
 };
+
 
 
 const styles = {

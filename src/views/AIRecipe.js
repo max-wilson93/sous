@@ -41,14 +41,8 @@ const AIRecipe = ({ updateRecipes }) => {
     }
   };
 
-  const handleSaveRecipe = () => {
-    if (recipe) {
-      updateRecipes(recipe); // Save the recipe using the passed down function
-    }
-  };
-
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{ fontFamily: "'Dancing Script', cursive", padding: '20px', textAlign: 'center' }}>
       <h1>AI Recipe Suggestions</h1>
       <div>
         <input
@@ -56,7 +50,7 @@ const AIRecipe = ({ updateRecipes }) => {
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
           placeholder="Enter ingredients (e.g., tomatoes, pasta)"
-          style={{ width: '300px', padding: '10px', marginRight: '10px' }}
+          style={{ fontFamily: "'Dancing Script', cursive", width: '300px', padding: '10px', marginRight: '10px' }}
         />
         <button onClick={handleGetRecipe} disabled={isLoading} style={styles.getRecipeButton}>
           {isLoading ? 'Generating...' : 'Get Recipe'}
@@ -83,12 +77,9 @@ const AIRecipe = ({ updateRecipes }) => {
                 {step}
               </p>
             ))}
-
-
           </div>
-          
         </div>
-     )}
+      )}
 
       {recipe && typeof recipe === 'string' && (
         <div style={{ marginTop: '20px', padding: '10px', background: '#ffe5b4', borderRadius: '8px' }}>
@@ -132,16 +123,6 @@ const styles = {
     fontSize: '16px',
     color: '#3e2723',
     marginBottom: '10px',
-  },
-  saveButton: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    backgroundColor: '#3e2723',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginTop: '20px',
   },
 };
 
